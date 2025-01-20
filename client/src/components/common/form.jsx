@@ -33,7 +33,6 @@ const CommonForm = ({ formControls, formData, setFormData, onSubmit, buttonText,
           }
             value={value}
           >
-
             <SelectTrigger className=''>
               <SelectValue placeholder={getControlItem.label} />
             </SelectTrigger>
