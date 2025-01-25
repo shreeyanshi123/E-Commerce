@@ -102,9 +102,9 @@ const authSlice=createSlice({
       state.isLoading=false;
       state.user=null;
       state.isAuthenticated=false;
-    })
-  }
-})
+    });
+  },
+});
 
 export const {setUser}=authSlice.actions;
 export default authSlice.reducer;
