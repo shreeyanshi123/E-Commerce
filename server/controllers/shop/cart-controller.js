@@ -131,7 +131,7 @@ const updateCartItemQty = async (req, res) => {
 
         const { userId, productId, quantity } = req.body;
 
-        if (!userId || !productId || !quantity <= 0) {
+        if (!userId || !productId || quantity <= 0) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid data provided!"
