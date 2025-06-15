@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import frontImg from './assets/front.jpg';  // adjust relative path if needed
+import frontImg from '../../assets/front.jpg'
 
 const AuthLayout = () => {
     return (
