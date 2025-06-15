@@ -40,6 +40,7 @@ function App() {
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
+         <Route path="/" element={<Navigate to="/auth/login" replace />} />
         <Route path='/auth' element={
           <CheckAuth isAuthenticated={isAuthenticated} user={user}>
             <AuthLayout />
