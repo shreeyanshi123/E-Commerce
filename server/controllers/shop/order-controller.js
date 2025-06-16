@@ -108,44 +108,55 @@ const capturePayment = async (req, res) => {
             });
         }
 
-        order.paymentStatus = "paid";
-        order.orderStatus = "confirmed";
-        order.paymentId = paymentId;
-        order.payerId = payerId;
-
-        for (let item of order.cartItems) {
-            let product = await Product.findById(item.productId);
-
-            if (!product) {
-                return res.status(404).json({
+        // 💡 ACTUALLY EXECUTE THE PAYMENT
+        paypal.payment.execute(paymentId, { payer_id: payerId }, async (error, payment) => {
+            if (error) {
+                console.log("PayPal execute error:", error.response || error);
+                return res.status(500).json({
                     success: false,
-                    message: `Not enough stock for this product ${product.title}`,
+                    message: "Payment execution failed at PayPal",
                 });
             }
 
-            product.totalStock -= item.quantity;
+            // 💡 PAYMENT EXECUTED SUCCESSFULLY
+            order.paymentStatus = "paid";
+            order.orderStatus = "confirmed";
+            order.paymentId = paymentId;
+            order.payerId = payerId;
 
-            await product.save();
-        }
+            for (let item of order.cartItems) {
+                let product = await Product.findById(item.productId);
 
-        const getCartId = order.cartId;
-        await Cart.findByIdAndDelete(getCartId);
+                if (!product) {
+                    return res.status(404).json({
+                        success: false,
+                        message: `Not enough stock for this product ${item.productId}`,
+                    });
+                }
 
-        await order.save();
+                product.totalStock -= item.quantity;
+                await product.save();
+            }
 
-        res.status(200).json({
-            success: true,
-            message: "Order confirmed",
-            data: order,
+            const getCartId = order.cartId;
+            await Cart.findByIdAndDelete(getCartId);
+            await order.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Order confirmed and payment captured",
+                data: order,
+            });
         });
+
     } catch (e) {
         console.log(e);
         res.status(500).json({
             success: false,
-            message: "Some error occured!",
+            message: "Some error occurred!",
         });
     }
-};
+}; 
 
 const getAllOrdersByUser = async (req, res) => {
     try {
